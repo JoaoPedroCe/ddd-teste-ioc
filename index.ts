@@ -1,9 +1,11 @@
 import express from "express";
 import route from "./app/User/presentation/routes/user-route";
+import { initializeDatabase } from "./app/common/infrastructure/sequelize";
 
 const app = express();
 const port = 3000;
 
+initializeDatabase();
 app.use(express.json());
 app.use(route);
 
