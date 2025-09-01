@@ -27,7 +27,7 @@ export class SequelizeDatabase extends Database {
           password: "root",
           host: "localhost",
           dialect: "postgres",
-          logging: false,
+          logging: true,
         }
       );
     }
