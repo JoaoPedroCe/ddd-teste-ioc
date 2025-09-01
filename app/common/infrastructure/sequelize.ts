@@ -1,5 +1,12 @@
 // infrastructure/database/SequelizeDatabase.ts
-import { Options, Sequelize, Transaction } from "sequelize";
+import {
+  Options,
+  QueryOptions,
+  QueryOptionsWithType,
+  QueryTypes,
+  Sequelize,
+  Transaction,
+} from "sequelize";
 import { Database } from "./database";
 
 export class SequelizeDatabase extends Database {
@@ -11,38 +18,43 @@ export class SequelizeDatabase extends Database {
     this.sequelize = new Sequelize(config);
   }
 
-  public static getInstance(config?: Options): SequelizeDatabase {
-    if (!SequelizeDatabase.instance) {
+  static getInstance(config?: Options): SequelizeDatabase {
+    if (!this.instance) {
       if (!config)
-        throw new Error(
-          "Configuração do Sequelize é necessária na primeira inicialização."
-        );
-      SequelizeDatabase.instance = new SequelizeDatabase(config);
+        throw new Error("Configuração necessária na primeira inicialização.");
+      this.instance = new SequelizeDatabase(config);
     }
-    return SequelizeDatabase.instance;
+    return this.instance;
   }
 
-  async query(sql: string, options?: object): Promise<any[]> {
-    const [results] = await this.sequelize.query(sql, options);
+  async query(
+    sql: string,
+    options?: QueryOptions | QueryOptionsWithType<QueryTypes.RAW>
+  ): Promise<any> {
+    const results = await this.sequelize.query(sql, options);
     return results;
   }
 
-  async transaction<T>(callback: (t: Transaction) => Promise<T>): Promise<T> {
+  transaction<T>(callback: (t: Transaction) => Promise<T>) {
     return this.sequelize.transaction(callback);
   }
 
-  getSequelizeInstance(): Sequelize {
+  getSequelize() {
     return this.sequelize;
+  }
+
+  static authenticate() {
+    return this.getInstance().sequelize.authenticate();
   }
 }
 
 export function initializeDatabase() {
   SequelizeDatabase.getInstance({
-    database: "meu_banco",
-    username: "root",
-    password: "senha",
+    database: "teste_ddd",
+    username: "postgres",
+    password: "root",
     host: "localhost",
-    dialect: "mysql",
+    dialect: "postgres",
     logging: false,
   });
 }
