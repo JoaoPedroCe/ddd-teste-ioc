@@ -20,9 +20,16 @@ export class SequelizeDatabase extends Database {
 
   static getInstance(config?: Options): SequelizeDatabase {
     if (!this.instance) {
-      if (!config)
-        throw new Error("Configuração necessária na primeira inicialização.");
-      this.instance = new SequelizeDatabase(config);
+      this.instance = new SequelizeDatabase(
+        config ?? {
+          database: "teste_ddd",
+          username: "postgres",
+          password: "root",
+          host: "localhost",
+          dialect: "postgres",
+          logging: false,
+        }
+      );
     }
     return this.instance;
   }
@@ -46,15 +53,4 @@ export class SequelizeDatabase extends Database {
   static authenticate() {
     return this.getInstance().sequelize.authenticate();
   }
-}
-
-export function initializeDatabase() {
-  SequelizeDatabase.getInstance({
-    database: "teste_ddd",
-    username: "postgres",
-    password: "root",
-    host: "localhost",
-    dialect: "postgres",
-    logging: false,
-  });
 }
